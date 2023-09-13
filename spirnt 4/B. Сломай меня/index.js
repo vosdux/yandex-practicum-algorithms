@@ -1,0 +1,3 @@
+// пример сгенерированный функцией findSameHash
+muqfmvvakelrmantmfaa
+zasvwujjzgpmcwrqizmh

@@ -1,0 +1,101 @@
+const _readline = require("readline");
+
+const _reader = _readline.createInterface({
+  input: process.stdin,
+});
+
+let input = [];
+
+// Установим callback на считывание строки - так мы получим
+// все строки из ввода в массиве _inputLines.
+_reader.on("line", (line) => {
+  input.push(line);
+});
+// Когда ввод закончится, будет вызвана функция solve.
+process.stdin.on("end", solve);
+
+function solve() {
+  const [peaksCount, connectionsCount] = input[0].split(" ");
+  const allEdges = [];
+  const error = "Oops! I did it again";
+
+  const notAded = new Set();
+  const added = new Set();
+  let edges = new Array(Number(connectionsCount));
+  let weight = 0;
+
+  if (connectionsCount === "0") {
+    if (peaksCount === '1') {
+      console.log(0);
+      return
+    } else {
+      console.log(error);
+      return;
+    }
+  }
+
+  for (let i = 1; i < Number(peaksCount) + 1; i++) {
+    notAded.add(i);
+  }
+
+  for (let i = 1; i < Number(connectionsCount) + 1; i++) {
+    const [from, to, weight] = input[i].split(" ");
+    allEdges.push([Number(from), Number(to), Number(weight)]);
+  }
+
+  function addVertex(v) {
+    notAded.delete(v);
+    edges.push(...allEdges.filter((elem) => elem[0] === v && notAded.has(elem[1])), ...allEdges.filter((elem) => elem[1] === v && notAded.has(elem[0])).map(item => ([item[1], item[0], item[2]])))
+
+    edges.sort((a, b) => b[2] - a[2]);
+  }
+
+  function findMST() {
+    let v = 1;
+
+    addVertex(v);
+
+    while (notAded.size !== 0 && edges.length !== 0) {
+      const e = edges.shift();
+
+      if (notAded.has(e[1])) {
+        weight += e[2];
+        addVertex(e[1]);
+      }
+    }
+
+    if (notAded.size) {
+      console.log(error);
+    } else {
+      console.log(weight);
+    }
+  }
+
+  findMST();
+}
+
+
+
+const input = [
+  '10 20',
+'9 10 4',
+'2 2 4',
+'4 2 8',
+'10 5 3',
+'1 10 6',
+'7 4 2',
+'10 10 6',
+'3 7 4',
+'8 9 4',
+'8 10 7',
+'6 10 10',
+'2 8 8',
+'3 8 1',
+'3 10 3',
+'9 5 8',
+'10 10 2',
+'1 8 1',
+'10 1 5',
+'3 6 10',
+'9 10 8',
+];
