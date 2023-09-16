@@ -16,14 +16,18 @@ process.stdin.on("end", solve);
 
 function solve() {
   const [peaksCount] = input[0].split(" ");
-  let color = new Array(Number(peaksCount) + 1).fill(1);
+  const numberPeaksCount = Number(peaksCount);
 
-  const adjList = getAdjList(peaksCount);
+  let color = new Array(numberPeaksCount + 1).fill(1);
+
+  const adjList = getAdjList(numberPeaksCount);
   const order = [];
 
   function mainSort() {
-    for (let i = 1; i < Number(peaksCount) + 1; i++) {
-      topSort(i);
+    for (let i = 1; i < numberPeaksCount + 1; i++) {
+      if (!Object.values(adjList).some((elem) => elem.includes(i))) {
+        topSort(i);
+      }
     }
   }
 
@@ -34,6 +38,7 @@ function solve() {
 
     const startElemChilds = adjList[v];
     const stack = [{ value: v, childrens: startElemChilds }];
+    const newOrder = [];
 
     while (stack.length) {
       const elem = stack[stack.length - 1];
@@ -62,10 +67,12 @@ function solve() {
 
       if (stackNextLength === stackPrevLength && color[elem.value] !== 3) {
         color[elem.value] = 3;
-        order.push(elem.value);
+        newOrder.unshift(elem.value);
         stack.pop();
       }
     }
+
+    order.push(...newOrder);
   }
 
   mainSort();
@@ -73,49 +80,24 @@ function solve() {
   console.log(order.join(" "));
 }
 
-function solve() {
-  let order = [];
-  let color = new Array(n).fill(0);
-  const [peaksCount] = input[0].split(" ");
-
-  const adjList = getAdjList(peaksCount);
-
-  function topSort(v) {
-    color[v] = 1;
-    for (let w of adjList[v]) {
-      if (color[w] == 0) {
-        topSort(w);
-      }
-    }
-    color[v] = 2;
-    order.push(v);
-  }
-
-  function mainTopSort() {
-    for (let i = 0; i < n; i++) {
-      if (color[i] == 0) {
-        topSort(i);
-      }
-    }
-  }
-  mainTopSort();
-}
-
 function getAdjList(peaksCount) {
   const map = {};
-  for (let i = 1; i < Number(peaksCount) + 1; i++) {
+
+  for (let i = 1; i < peaksCount + 1; i++) {
     map[i] = [];
   }
 
   for (let i = 1; i < input.length; i++) {
     const [from, to] = input[i].split(" ");
+    const numberFrom = Number(from);
+    const numberTo = Number(to);
 
-    map[from].push(to);
+    map[numberFrom].push(numberTo);
   }
 
-  Object.keys(map).forEach((elem) => {
-    map[elem] = map[elem].sort((a, b) => Number(a) - Number(b));
-  });
+  // Object.keys(map).forEach((elem) => {
+  //   map[elem] = map[elem].sort((a, b) => map[a].length - map[b].length);
+  // });
 
   return map;
 }

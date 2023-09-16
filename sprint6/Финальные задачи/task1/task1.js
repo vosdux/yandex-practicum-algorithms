@@ -1,3 +1,22 @@
+/* ID: 90531239
+Необходимо составить остовное дерево. При составлении оставного дерева
+необходимо брать и сохранять вершину с самым тяжёлым ребром, которое к ней
+ведёт.
+Для реализации данного алгоритма используются функции findMST и addVertex.
+При запуске функции findMST, берётся самая первая вершина и запускается
+функция addVertex, которая добавляет все рёбра с вершинами у взятой вершины
+в кучу (edges) и добавляет в set added(т.к.
+данная вершина уже будет добавлена и больше её обрабатывать не нужно). После
+данной операции, в функции findMST выбирается максимальная вершина из
+кучи, и повторяется весь алгоритм заново, пока все вершины
+с рёбрами не будут добавлены в оставное дерево
+
+Временная сложность: O(E * logV), где E — количество рёбер в графе, а V — количество
+вершин. Т.к. используется очередь с приоритетом (куча).
+
+Пространственная сложность: O(V * E)
+
+*/
 const _readline = require("readline");
 
 const _reader = _readline.createInterface({
@@ -49,7 +68,7 @@ function solve() {
 
     addVertex(v);
 
-    while (added.size !== Number(peaksCount) && edges.length !== 0) {
+    while (added.size !== Number(peaksCount) && !edges.isEmpty()) {
       const e = edges.remove();
 
       if (!added.has(e[0])) {
@@ -174,7 +193,10 @@ class MaxHeap {
 
   heapifyUp() {
     let index = this.heap.length - 1;
-    while (this.hasParent(index) && this.parent(index)[1] < this.heap[index][1]) {
+    while (
+      this.hasParent(index) &&
+      this.parent(index)[1] < this.heap[index][1]
+    ) {
       this.swap(this.getParentIndex(index), index);
       index = this.getParentIndex(index);
     }
@@ -197,5 +219,9 @@ class MaxHeap {
       }
       index = largerChildIndex;
     }
+  }
+
+  isEmpty() {
+    return this.heap.length === 0;
   }
 }
