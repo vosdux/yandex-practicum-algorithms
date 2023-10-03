@@ -4,7 +4,7 @@ const _reader = _readline.createInterface({
   input: process.stdin,
 });
 
-let input = ["5", "4 9 2 4 6", "7", "9 4 0 0 2 8 4"];
+let input = [];
 
 // Установим callback на считывание строки - так мы получим
 // все строки из ввода в массиве _inputLines.
@@ -26,10 +26,10 @@ function solve() {
   }
 
   for (let i = 1; i < n + 1; i++) {
-    const letter = firstRow[i];
+    const letter = firstRow[i - 1];
 
     for (let j = 1; j < m + 1; j++) {
-      const secondRowLetter = secondRow[j];
+      const secondRowLetter = secondRow[j - 1];
 
       if (letter === secondRowLetter) {
         const prevElement = dp[i - 1][j - 1] || 0;
@@ -41,8 +41,6 @@ function solve() {
       }
     }
   }
-
-  console.log(dp, 'dp')
 
   const last = dp[n][m];
 
@@ -56,13 +54,15 @@ function solve() {
 
   const firstRowIndexes = [];
   const secondRowIndexes = [];
+  const answer = [];
 
   while (dp[i][j] !== 0) {
-    if (firstRow[i] === secondRow[j]) {
-      i -= 1;
-      j -= 1;
+    if (firstRow[i - 1] === secondRow[j - 1]) {
+      answer.push(firstRow[i]);
       firstRowIndexes.push(i);
       secondRowIndexes.push(j);
+      i -= 1;
+      j -= 1;
     } else {
       if (dp[i][j] === dp[i - 1][j]) {
         i -= 1;
@@ -76,4 +76,3 @@ function solve() {
   console.log(firstRowIndexes.reverse().join(" "));
   console.log(secondRowIndexes.reverse().join(" "));
 }
-solve();
