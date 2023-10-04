@@ -1,3 +1,18 @@
+/* 
+ID: 91963132
+Для того чтобы посчитать минимальное кол-во необходимых правок,
+нужно знать предыдущие значения и текущие(два ряда матрицы), поэтому
+вместо двумерного массива dp, я храню два массива prev и result. 
+Если две буквы совпадают, то result[j] = prev[j - 1], в противном случае
+формула переход динамики - min(result[j - 1], prev[j], prev[j - 1]) + 1
+Ответ будет находится в конце массива result.
+
+Временная сложность: 
+O(N * M) N и M - длины строк
+
+Пространственная сложность:
+O(2 * N) два массива длиной равной N, где N длина меньшей строки
+*/
 const _readline = require("readline");
 
 const _reader = _readline.createInterface({
@@ -15,40 +30,33 @@ _reader.on("line", (line) => {
 process.stdin.on("end", solve);
 
 function solve() {
-  const firstRow = input[0].split("");
-  const secondRow = input[1].split("");
-  const n = firstRow.length;
-  const m = secondRow.length;
-  const dp = new Array(n + 1);
-
-  for (let i = 0; i < n + 1; i++) {
-    dp[i] = new Array(m + 1).fill(0);
+  let s1 = input[0];
+  let s2 = input[1];
+  if (s2.length > s1.length) {
+    [s1, s2] = [s2, s1];
   }
+  const m = s1.length;
+  const n = s2.length;
+  let result = Array(n + 1)
+    .fill(0)
+    .map((_, i) => i);
+  let prev = Array(n + 1).fill(0);
 
-  for (let i = 1; i < n + 1; i++) {
-    const letter = firstRow[i - 1];
+  for (let i = 1; i <= m; i++) {
+    for (let k = 0; k < prev.length; k++) {
+      prev[k] = 0;
+    }
+    prev[0] = i;
+    [prev, result] = [result, prev];
 
-    for (let j = 1; j < m + 1; j++) {
-      const secondRowLetter = secondRow[j - 1];
-
-      if (letter === secondRowLetter) {
-        const prevElement = dp[i - 1][j - 1] || 0;
-        dp[i][j] = 1 + prevElement;
+    for (let j = 1; j <= n; j++) {
+      if (s1[i - 1] === s2[j - 1]) {
+        result[j] = prev[j - 1];
       } else {
-        const prevRowElement = dp[i - 1][j];
-        const currRowElement = dp[i][j - 1] || 0;
-        dp[i][j] = Math.max(prevRowElement, currRowElement);
+        result[j] = Math.min(result[j - 1], prev[j], prev[j - 1]) + 1;
       }
     }
   }
 
-  const last = dp[n][m];
-  
-  let largest = firstRow.length;
-
-  if (secondRow.length > firstRow.length) {
-    largest = secondRow.length
-  }
-
-  console.log(largest - last);
+  console.log(result[n]);
 }
